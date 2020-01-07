@@ -1,0 +1,295 @@
+
+<!DOCTYPE html>
+<html lang="" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HGame_2019 - BlackMax&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="2019杭电HGame CTF Week2-3Web​    Week1当时找找资料还能做出来，Week2都不知道从哪里下手，真是菜的真实，出了WP之后慢慢补起来吧。
+easy_php12345代码,"> 
+    <meta name="author" content="BlackMax"> 
+    <link rel="alternative" href="atom.xml" title="BlackMax&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">BlackMax&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;" data-url="blackmax1s.me"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">HGame_2019</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">HGame_2019</h1>
+        <div class="stuff">
+            <span>二月 26, 2019</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/CTF/" rel="tag">CTF</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="2019杭电HGame-CTF-Week2-3"><a href="#2019杭电HGame-CTF-Week2-3" class="headerlink" title="2019杭电HGame CTF Week2-3"></a>2019杭电HGame CTF Week2-3</h1><h2 id="Web"><a href="#Web" class="headerlink" title="Web"></a>Web</h2><p>​    Week1当时找找资料还能做出来，Week2都不知道从哪里下手，真是菜的真实，出了WP之后慢慢补起来吧。</p>
+<h3 id="easy-php"><a href="#easy-php" class="headerlink" title="easy_php"></a>easy_php</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">代码审计♂第二弹</span><br><span class="line">URL http:&#x2F;&#x2F;118.24.25.25:9999&#x2F;easyphp&#x2F;index.html</span><br><span class="line">Base Score 150</span><br><span class="line">Now Score 150</span><br><span class="line">User solved 151</span><br></pre></td></tr></table></figure>
+
+<p>​    打开链接就一句话，come on ! second wait you。然后页面标签是where is my robots。然后我就懵逼了，然后呢？抓包也没找到啥线索。之后才知道，robots是一种协议，又称爬虫协议。在服务器上会放一个robots.txt文件，这个文件规定了哪些东西可以让爬虫去爬，所以我们先访问这个文件试试。</p>
+<p><img src="HGame-2019/robots.png" alt="robots"></p>
+<p>​    这个路径看起来才是真正主页的文件了，访问一下试试</p>
+<p><img src="HGame-2019/shequ.png" alt="shequ"></p>
+<p>​    这个字有点潦草，我看不懂??但是可以看到真正的代码了</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">   error_reporting(<span class="number">0</span>);</span><br><span class="line">   $img = $_GET[<span class="string">'img'</span>];</span><br><span class="line">   <span class="keyword">if</span>(!<span class="keyword">isset</span>($img))</span><br><span class="line">       $img = <span class="string">'1'</span>;</span><br><span class="line">   $img = str_replace(<span class="string">'../'</span>, <span class="string">''</span>, $img);</span><br><span class="line">   <span class="keyword">include_once</span>($img.<span class="string">".php"</span>);</span><br><span class="line">   highlight_file(<span class="keyword">__FILE__</span>);</span><br></pre></td></tr></table></figure>
+
+<p>​    这里看到我们要用GET请求传img这个参数，参数就是文件路径，但是不能含有../不然会被删掉，这里有个trick，虽然我现在还没搞懂原理（太菜了吧，明天去问问大佬），就是用…/./来替换掉../，我们先来看一下长啥样</p>
+<p><img src="HGame-2019/think.png" alt=""></p>
+<p>​    他让我再think think，那就是这样做思路应该是对的，只是还有点东西没注意到，有些时候文件里的内容读不到，可能是写成了注释，可以先把源码base64读出来，再转回去，这就要用到伪协议了，上上篇里面好像有。最后payload为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;118.24.25.25:9999&#x2F;easyphp&#x2F;img&#x2F;index.php?img&#x3D;php:&#x2F;&#x2F;filter&#x2F;read&#x2F;convert.base64-encode&#x2F;resource&#x3D;...&#x2F;.&#x2F;flag</span><br></pre></td></tr></table></figure>
+
+<p>返回了的base64进行decode就可以得到flag了。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    <span class="comment">//$flag = 'hgame&#123;You_4re_So_g0od&#125;';</span></span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"maybe_you_should_think_think"</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="PHP-trick"><a href="#PHP-trick" class="headerlink" title="PHP trick"></a>PHP trick</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Description </span><br><span class="line">some php tricks</span><br><span class="line">URL http:&#x2F;&#x2F;118.24.3.214:3001</span><br><span class="line">Base Score 200</span><br><span class="line">Now Score 200</span><br><span class="line">User solved 111</span><br></pre></td></tr></table></figure>
+
+<p>​    上来就给了个源码</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//admin.php</span></span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line">$str1 = (string)@$_GET[<span class="string">'str1'</span>];</span><br><span class="line">$str2 = (string)@$_GET[<span class="string">'str2'</span>];</span><br><span class="line">$str3 = @$_GET[<span class="string">'str3'</span>];</span><br><span class="line">$str4 = @$_GET[<span class="string">'str4'</span>];</span><br><span class="line">$str5 = @$_GET[<span class="string">'H_game'</span>];</span><br><span class="line">$url = @$_GET[<span class="string">'url'</span>];</span><br><span class="line"><span class="keyword">if</span>( $str1 == $str2 )&#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">'step 1 fail'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span>( md5($str1) != md5($str2) )&#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">'step 2 fail'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span>( $str3 == $str4 )&#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">'step 3 fail'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> ( md5($str3) !== md5($str4))&#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">'step 4 fail'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (strpos($_SERVER[<span class="string">'QUERY_STRING'</span>], <span class="string">"H_game"</span>) !==<span class="keyword">false</span>) &#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">'step 5 fail'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span>(is_numeric($str5))&#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">'step 6 fail'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> ($str5&lt;<span class="number">9999999999</span>)&#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">'step 7 fail'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> ((string)$str5&gt;<span class="number">0</span>)&#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">'step 8 fial'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (parse_url($url, PHP_URL_HOST) !== <span class="string">"www.baidu.com"</span>)&#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">'step 9 fail'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (parse_url($url,PHP_URL_SCHEME) !== <span class="string">"http"</span>)&#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">'step 10 fail'</span>);</span><br><span class="line">&#125;</span><br><span class="line">$ch = curl_init();</span><br><span class="line">curl_setopt($ch,CURLOPT_URL,$url);</span><br><span class="line">$output = curl_exec($ch);</span><br><span class="line">curl_close($ch);</span><br><span class="line"><span class="keyword">if</span>($output === <span class="keyword">FALSE</span>)&#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">'step 11 fail'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> $output;</span><br><span class="line">&#125;</span><br><span class="line">step <span class="number">1</span> fail</span><br></pre></td></tr></table></figure>
+
+<p>​    从源码可以看到，这是绕过php中一些函数的练习，有很多关，慢慢来看吧。</p>
+<p>​    首先，会通过GET请求拿到str1, str2, str3, str4, H_game,这5个变量的值，然后开始做检查。要求str1要不等于str2但是md5(str1)==md5(str2)，这个在之前的题目也有提到过，可以用md5结果是0的科学计数法的字符串来绕过，之前有整理过，QNKCDZO，24061070等等，可以自己把这些字符串的md5打出来自己看一下。</p>
+<p>​    第二个检查是要两个字符串不相等，但是要求md5出来的<strong>完全一样</strong>，上面那个检查不是要求完全相等，这里要利用md5()如果传入的是数组的话，返回都是null这一点来进行绕过。str3[]=1，str4[]=2就可以了。</p>
+<p>​    下一个检查要求GET请求中不能含有H_game这个子串，但是我们可以用url编码一个字符，比如%48_game，这样不影响功能，但也不会被检查出来。另外，还可以用+和.来代替_，会被自动替换的。比如H+game</p>
+<p>​    在接下来有一个str5的检查，也就是H_game传入的值的检查。提示了不能是数字，然后又要&lt;99999999，但是string之后还要&gt;0。当然，这里我一开始并没有做出来，看了wp之后发现有个trick是，<strong>数组在和数字比较的时候，永远数组比较大</strong>。那我们就干脆把H_game[]=1,然后就能绕过这个检查了。</p>
+<p>​    最后的检查应该是一个比较重要的点，可以造成ssrf了。问题出在，parse_url在解析一个url的时候，把最后一个@号后面的当成host，我们看这个例子</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$url = <span class="string">'http://user@www.google.com@www.baidu.com'</span>;</span><br><span class="line">print_r(parse_url($url));</span><br><span class="line">print_r(parse_url($url, PHP_URL_HOST));</span><br><span class="line">print_r(parse_url($url, PHP_URL_SCHEME));</span><br></pre></td></tr></table></figure>
+
+<p>​    这样的结果如下</p>
+<p><img src="HGame-2019/parse_url.png" alt="parse_url"></p>
+<p>​    但是，libcurl不是这么解析的，他认为第一个@号之后的就是host了，所以这个例子中，他就会把<a href="http://www.googe.com当成host。所以我们用这个差异，把www.google.com控成我们想要让他访问的一个地址，就能去访问了。" target="_blank" rel="noopener">www.googe.com当成host。所以我们用这个差异，把www.google.com控成我们想要让他访问的一个地址，就能去访问了。</a></p>
+<p>讲的不严谨，可以看一些这个理解</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">当url中有多个@符号时，parse_url中获取的host是最后一个@符号后面的host，而libcurl则是获取的第一个@符号之后的。因此当代码对http:&#x2F;&#x2F;user@eval.com:80@baidu.com 进行解析时，PHP获取的host是baidu.com是允许访问的域名，而最后调用libcurl进行请求时则是请求的eval.com域名，可以造成ssrf绕过</span><br><span class="line">此外对于https:&#x2F;&#x2F;evil@baidu.com这样的域名进行解析时,php获取的host是[evil@baidu.com](mailto:%60evil@baidu.com)，但是libcurl获取的host却是evil.com</span><br></pre></td></tr></table></figure>
+
+<p>从注释看到有个admin.php，那就看一下吧。</p>
+<p><img src="HGame-2019/parm.png" alt=""></p>
+<p>​    然后就看到了only localhost can see it1。那把地址再改改，改成localhost:80试试</p>
+<p>​    这下有东西了</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//flag.php</span></span><br><span class="line"><span class="keyword">if</span>($_SERVER[<span class="string">'REMOTE_ADDR'</span>] != <span class="string">'127.0.0.1'</span>) &#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">'only localhost can see it'</span>);</span><br><span class="line">&#125;</span><br><span class="line">$filename = $_GET[<span class="string">'filename'</span>]??<span class="string">''</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (file_exists($filename)) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"sorry,you can't see it"</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> file_get_contents($filename);</span><br><span class="line">&#125;</span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"><span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>​    可以看到这个admin.php会再要一个filename参数，但是你不能直接去要一个已经存在的文件，这又要用到前面经常提到的伪协议啦，再复习一次php://filter/read/convert.base64-encode/resource=flag.php</p>
+<p>最后的payload</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;118.24.3.214:3001&#x2F;?str1&#x3D;QNKCDZO&amp;str2&#x3D;240610708&amp;str3[]&#x3D;1&amp;str4[]&#x3D;&amp;H.game[]&#x3D;1&amp;url&#x3D;http:&#x2F;&#x2F;user@localhost:80@www.baidu.com&#x2F;admin.php?filename&#x3D;php:&#x2F;&#x2F;filter&#x2F;read&#x2F;convert.base64-encode&#x2F;resource&#x3D;flag.php</span><br></pre></td></tr></table></figure>
+
+<p>​    拿到base64之后解码就有了！</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php $flag &#x3D; hgame&#123;ThEr4_Ar4_s0m4_Php_Tr1cks&#125; ?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>（另外我很蠢的在一直给118.24.3.214:3001传filename这个变量，后来才反应过来是admin.php这个再接收，应该放到我们构造的那个用来libcurl的地址里，太菜了）</p>
+<h2 id="Misc"><a href="#Misc" class="headerlink" title="Misc"></a>Misc</h2><h3 id="旧时记忆"><a href="#旧时记忆" class="headerlink" title="旧时记忆"></a>旧时记忆</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">愉快的送（nao）分（dong）题，大家一起来学历史吧，结果加上hgame&#123;&#125;（字母均为大写）</span><br><span class="line">hint：存储器</span><br></pre></td></tr></table></figure>
+
+<p><img src="HGame-2019/old_days.jpg" alt=""></p>
+<p>​    这题，大概是考你对计算机历史的了解吧。虽然早有听说过以前编程是纸带打孔编的，但实际上还真不知道是怎么一回事，这道题给的这张图片其实就是一张打孔卡。</p>
+<p>​    打孔的具体规则如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. 前三行是一块功能区，用于区分字母区，字母的分区看下面的表，比如一列里有12（也就是第一个）打孔，1（也就是第四行）打孔，代表第一区的第1个字母，即A字母。</span><br><span class="line">2. 如果一列只有0-9打了一个孔，那就是对应数字0-9</span><br><span class="line">3.全都没打孔代表空格，0-9打了3个孔代表一些特殊字符，具体可以自行查一下</span><br></pre></td></tr></table></figure>
+
+<p>​    字母区如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">一区</th>
+<th align="center">二区</th>
+<th align="center">三区</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">A</td>
+<td align="center">J</td>
+<td align="center"><strong>无</strong></td>
+</tr>
+<tr>
+<td align="center">B</td>
+<td align="center">K</td>
+<td align="center">S</td>
+</tr>
+<tr>
+<td align="center">C</td>
+<td align="center">L</td>
+<td align="center">T</td>
+</tr>
+<tr>
+<td align="center">D</td>
+<td align="center">M</td>
+<td align="center">U</td>
+</tr>
+<tr>
+<td align="center">E</td>
+<td align="center">N</td>
+<td align="center">V</td>
+</tr>
+<tr>
+<td align="center">F</td>
+<td align="center">O</td>
+<td align="center">W</td>
+</tr>
+<tr>
+<td align="center">G</td>
+<td align="center">P</td>
+<td align="center">X</td>
+</tr>
+<tr>
+<td align="center">H</td>
+<td align="center">Q</td>
+<td align="center">Y</td>
+</tr>
+<tr>
+<td align="center">I</td>
+<td align="center">R</td>
+<td align="center">Z</td>
+</tr>
+</tbody></table>
+<p>​    可以结合这个例子看一下</p>
+<p><img src="HGame-2019/hellowordCard.jpg" alt=""></p>
+<p>​    这个就是HELLO,WORLD……………（在最上面一行）</p>
+<p>​    根据对应规则，这题应该是hgame{0LD_DAY5%M3MORY}，大小写我也不确定，都试一下吧</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/5146554.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/qq/001faIUs4M2zna.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>

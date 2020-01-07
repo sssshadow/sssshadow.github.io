@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<html lang="" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>鼠键共享软件synergy - BlackMax&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="​    因为平时开着两台电脑，一台Windows，一台Ubuntu，桌上放两套鼠键就感觉很麻烦，于是想找找有没有能共享鼠键的软件，网上搜了一圈都比较推荐Synergy这个，于是就下载来用用。这个软,"> 
+    <meta name="author" content="BlackMax"> 
+    <link rel="alternative" href="atom.xml" title="BlackMax&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">BlackMax&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;" data-url="blackmax1s.me"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">鼠键共享软件synergy</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">鼠键共享软件synergy</h1>
+        <div class="stuff">
+            <span>一月 05, 2019</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E9%9A%8F%E7%AC%94%E4%B8%80%E8%AE%B0/" rel="tag">随笔一记</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <p>​    因为平时开着两台电脑，一台Windows，一台Ubuntu，桌上放两套鼠键就感觉很麻烦，于是想找找有没有能共享鼠键的软件，网上搜了一圈都比较推荐Synergy这个，于是就下载来用用。这个软件之前是免费软件，后面成为收费软件了，为了先体验一下，我就下载了免费版版本，我下载的是1.8.8，好像有1.10可以下载，我还没测试。我是在<a href="https://sourceforge.net/projects/synergy-stable-builds/files/v1.8.8-stable/" target="_blank" rel="noopener">sourceforge</a>下载的。</p>
+<p>​    这个软件也是服务端-客户端架构，你可以用设置一台电脑为服务端，然后控制多台客户端。</p>
+<h3 id="配置客户端"><a href="#配置客户端" class="headerlink" title="配置客户端"></a>配置客户端</h3><p>​    建议现在客户端打开软件，如图，</p>
+<p>​    <img src="client.png" alt="client"></p>
+<p>​    在Client打钩，这步先关注这个Screen name，这个就是客户端的名称了，等会要在服务端那头填写。Server IP就是你服务端的IP，注意，这里要保证 <strong>客户端和服务端之间能ping通。</strong></p>
+<h3 id="配置服务端"><a href="#配置服务端" class="headerlink" title="配置服务端"></a>配置服务端</h3><p>​    服务端要设置的地方比客户端多一些，首先勾选Server。</p>
+<p>​    <img src="synergy/server.png" alt=""></p>
+<p>​    然后点设置服务端，从右上角拖动一个屏幕到你主机的相对位置，并且<strong>命名成为你客户端的名称</strong>，注意名称要相同。（服务端那里写了一排IP，但都不太正确，还是以自己的IP为准，填到客户端的配置窗口里，最好保证IP不会变动，不然每次要再填一次很麻烦）</p>
+<p><img src="synergy/config.png" alt=""></p>
+<p>​    然后点击开始，正常情况日志窗口会显示xxxx Connected的log，就证明连接成功了，然后移动鼠标，超出主机屏幕就会自动切换到客户端的屏幕里了。</p>
+<h3 id="体验"><a href="#体验" class="headerlink" title="体验"></a>体验</h3><p>​    我用了一个多星期吧，感觉确实方便，但同时还是有一点不足的，我这个版本不支持文件和剪切板的共享，没有办法迅速从主机复制东西到客户机，不知道现在付费版有没有更新这个功能。关于Bug方面，我基本没有遇到过bug，但我同学碰到过一次切不会来的情况。不过因为是网络传输，肯定比起直接插鼠标有一点延迟，但网络情况好的状况下基本没有明显差距，总体来说这个软件不错，要是付费版支持共享剪切板和文件的话，可以考虑升级到付费版。</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/5146554.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/qq/001faIUs4M2zna.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>

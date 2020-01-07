@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+<html lang="" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dex动态加载 - BlackMax&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="​    安卓上面加载dex已经不是啥新鲜事了，这边要测试一下之前说的Artist对于动态加载的dex能不能应用到。所以就自己写一个这样的例子，哎，虽然不难，还是踩了一些坑。
+Java加载Dex​ ,"> 
+    <meta name="author" content="BlackMax"> 
+    <link rel="alternative" href="atom.xml" title="BlackMax&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">BlackMax&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;" data-url="blackmax1s.me"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">Dex动态加载</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">Dex动态加载</h1>
+        <div class="stuff">
+            <span>四月 29, 2019</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E5%AE%89%E5%8D%93-dex/" rel="tag">安卓 dex</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <p>​    安卓上面加载dex已经不是啥新鲜事了，这边要测试一下之前说的Artist对于动态加载的dex能不能应用到。所以就自己写一个这样的例子，哎，虽然不难，还是踩了一些坑。</p>
+<h2 id="Java加载Dex"><a href="#Java加载Dex" class="headerlink" title="Java加载Dex"></a>Java加载Dex</h2><p>​    java加载dex相对简单一些，但缺点就是很容易看出来，毕竟java逆向要简单于c嘛。主要过程也是分为两个，第一个就是Dex的制作，第二个是加载Dex的App的编写。</p>
+<h3 id="Dex制作"><a href="#Dex制作" class="headerlink" title="Dex制作"></a>Dex制作</h3><p>​    这里要注意，dex中路径什么的很重要，不然会影响到后面加载，导致找不到类，我这里先贴上我的路径，后面在慢慢分析。</p>
+<p><img src="./Dex%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/%E8%B7%AF%E5%BE%84.png" alt="路径"></p>
+<p>​    可以看到，我在Dynamic包下创建了一个IDynamic的接口，具体如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.blackmax.loaddex.Dynamic;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IDynamic</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">TestDynamicCode</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    同时，包下还有一个impl包，用来具体实现这个接口:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.blackmax.loaddex.Dynamic.impl;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.util.Log;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.blackmax.loaddex.Dynamic.IDynamic;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DynamicImpl</span> <span class="keyword">implements</span> <span class="title">IDynamic</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">TestDynamicCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        TestDynamicLog();</span><br><span class="line">        TestDynamicDiv(<span class="number">10</span>, <span class="number">5</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">TestDynamicLog</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Log.d(<span class="string">"DexCode"</span>, <span class="string">"This is a dex code"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">TestDynamicDiv</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123;</span><br><span class="line">        Log.d(<span class="string">"DexCode"</span>, <span class="string">""</span> + a / b);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    我们的目标是把这两个文件打包成dex，让正常的app加载这个dex并调用其中的<code>TestDynamicCode()</code>。接下来就要编译，直接用Build-Make Project就行了。编译完之后，在<code>app/build</code>路径下会产生编译好的class文件。这里要说明一下，我在网上查的很多都说在<code>app/build/intermediates</code>路径下，可能是因为版本之类的问题，我的编译出来的class文件在<code>app/build/intermediates/javac/debug/compileDebugJavaWithJavac</code>路径下，大家找不到就自己搜一下.class文件就知道了。</p>
+<p><img src="./Dex%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD/class.png" alt="class"></p>
+<p>​    有了class文件，接下来一步就是打包成jar，这里用了别人的脚本，直接在app目录下的build.gradle添加一个打包任务就行了。记得要改路径。然后用右侧gradle任务栏找到makeJar任务执行就行了。不出意外在<code>build/libs</code>目录下就能找到打包好的dynamic.jar文件了。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">//删除dynamic.jar包任务</span><br><span class="line">task clearJar(<span class="built_in">type</span>: Delete) &#123;</span><br><span class="line">    delete <span class="string">'libs/dynamic.jar'</span></span><br><span class="line">&#125;</span><br><span class="line">//打包任务</span><br><span class="line">task makeJar(<span class="built_in">type</span>:org.gradle.api.tasks.bundling.Jar) &#123;</span><br><span class="line">    //指定生成的jar名</span><br><span class="line">    baseName <span class="string">'dynamic'</span></span><br><span class="line">    //从哪里打包class文件</span><br><span class="line"></span><br><span class="line">    from(<span class="string">'build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/blackmax/loaddex/Dynamic'</span>)</span><br><span class="line">    //打包到jar后的目录结构，这里就是jar包内部的结构</span><br><span class="line">    into(<span class="string">'com/blackmax/loaddex/Dynamic'</span>)</span><br><span class="line">    //去掉不需要打包的目录和文件</span><br><span class="line">    exclude(<span class="string">'test/'</span>, <span class="string">'Dynamic.class'</span>, <span class="string">'BuildConfig.class'</span>, <span class="string">'R.class'</span>)</span><br><span class="line">    //去掉R$开头的文件</span><br><span class="line">    exclude&#123; it.name.startsWith(<span class="string">'R$'</span>);&#125;</span><br><span class="line">&#125;</span><br><span class="line">makeJar.dependsOn(clearJar, build)</span><br></pre></td></tr></table></figure>
+
+<p>​    目前我们的还是jar包，还不是dex结构的包，接下来一步就是转换，好在这步Android SDK也提供了工具，直接用就完事了。在SDK中找到路径<code>build-tools/xxx版本</code>，比如这里我用的28.0.3，然后用dx脚本转换</p>
+<p><code>./dx --dex --output=dynamic_dex.jar dynamic.jar</code></p>
+<p>​    在目录下就能找到dynamic_dex.jar了，然后复制到assets路径下。</p>
+<h3 id="编写App"><a href="#编写App" class="headerlink" title="编写App"></a>编写App</h3><p>​    为了保证路径之类的命名问题，我直接就在这个工程上修改编写APP了。首先为了保证最后的app是加载我们的Dex中的代码，而不是把impl打包进app，先把impl包删了，只保留接口。</p>
+<p>​    剩下的就是编写加载dex的逻辑了，要把dex拷贝到合适位置，再加载。文件处理那块参考的<a href="https://www.jianshu.com/p/f9d00255ab57" target="_blank" rel="noopener">这里</a>的代码，这里不贴全部的代码了，只看核心的几个调用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建DexClassLoader，第一个参数是dynamic_dex.jar的文件路径，第二个参数是要放dex的目录路径，第三个参数为空，第四个参数为getClassLoader() 可以用this.</span></span><br><span class="line">DexClassLoader dexClassLoader = <span class="keyword">new</span> DexClassLoader(internalPath, cacheFile.getAbsolutePath(), <span class="keyword">null</span>, <span class="keyword">this</span>.getClassLoader());</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 加载类，注意路径！一定要和dynamic_dex.jar中的路径一样，最好用JEB打开jar看一下，确定没写错</span></span><br><span class="line">    Class libClazz = dexClassLoader.loadClass(<span class="string">"com.blackmax.loaddex.Dynamic.impl.DynamicImpl"</span>);</span><br><span class="line">    dynamic = (IDynamic) libClazz.newInstance();</span><br><span class="line">    <span class="keyword">if</span> (dynamic != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// 如果前面都加载没问题，那么这里应该能调用到dex中的方法了</span></span><br><span class="line">        dynamic.TestDynamicCode();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>然后清除build下的缓存文件，最好缓存都清一遍，重新build</strong>，我遇到的就是这样一个坑爹的问题，最后打包之后一直找不到类，但是清除缓存之后再build就好了。。。我也不清楚什么原因，参照<a href="https://blog.csdn.net/sinat_31057219/article/details/78663157" target="_blank" rel="noopener">这里</a>解决的</p>
+<h2 id="JNI加载Dex"><a href="#JNI加载Dex" class="headerlink" title="JNI加载Dex"></a>JNI加载Dex</h2><p>​    这个今天再写。。还没开始做</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/5146554.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/qq/001faIUs4M2zna.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>

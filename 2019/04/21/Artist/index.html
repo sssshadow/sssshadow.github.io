@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Artist框架--安卓dex2oat编译器修改 - BlackMax&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="背景​    因为最近要搞安卓上的APP污点分析，就去找各种实现方案。TaintDroid是之前做的最好的，应用也比较好的一个工具，但是问题是这个工具太老了，最新只能支持到Android4.3，现在,"> 
+    <meta name="author" content="BlackMax"> 
+    <link rel="alternative" href="atom.xml" title="BlackMax&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">BlackMax&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;" data-url="blackmax1s.me"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">Artist框架--安卓dex2oat编译器修改</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">Artist框架--安卓dex2oat编译器修改</h1>
+        <div class="stuff">
+            <span>四月 21, 2019</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/Android-ART/" rel="tag">Android ART</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>​    因为最近要搞安卓上的APP污点分析，就去找各种实现方案。TaintDroid是之前做的最好的，应用也比较好的一个工具，但是问题是这个工具太老了，最新只能支持到Android4.3，现在都9102年了，安卓早就使用ART虚拟机了，所以这个工具不能用了。我找了很久，也有一些相关论文做了ART上的Taint Analysis，比如TaintART，但是这个工具似乎开源并不完全，在github上只能找到对于ART部分的修改，framework部分的代码没有找到，联系作者未果，只能继续寻找其他方案。</p>
+<p>​    最后，我找到了IEEE上的一篇paper，作者们开发了一个框架（类似Xposed，可以在框架上开发插件），可以让你在app安装的dex2oat阶段插桩，实现一些功能。并且这些作者目前还在维护这个框架，以支持更新的系统。这个框架就是<a href="https://artist.cispa.saarland/" target="_blank" rel="noopener">Artist</a>–艺术家。</p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>​    要使用这个框架也比较方便，在安卓7.1和7.0上，作者直接提供了GUI程序，在有root的手机上直接安装GUI程序，会自动把框架什么的部署好。</p>
+<p>​    如果显示这样，没有什么错误弹窗就说明装的没问题了。</p>
+<p><img src="./Artist/UIscreen.png" alt=""></p>
+<p>​    然后去下载两个测试Module插件，在Module中先添加下载的.zip文件，然后再在Instrument里选择要被插桩的app来测试框架是否生效。比方说官方这个trace module，可以把APP中call的关系通过log打印出来。可以看到我的com.example.getmac.MainActivity调用了testStringParam(), checkPermission()等等方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">04-10 07:43:13.078  9845  9845 D class saarland.cispa.artist.codelib.CodeLib: Caller -&gt; com.example.getmac.MainActivity.testStringParam(MainActivity.java:47)</span><br><span class="line">04-10 07:43:13.092  9845  9845 D class saarland.cispa.artist.codelib.CodeLib: Caller -&gt; com.example.getmac.MainActivity.checkPermission(MainActivity.java:51)</span><br><span class="line">04-10 07:43:13.093  9845  9845 D class saarland.cispa.artist.codelib.CodeLib: Caller -&gt; com.example.getmac.MainActivity.testIntReturn(MainActivity.java:43)</span><br><span class="line">04-10 07:43:13.093  9845  9845 D class saarland.cispa.artist.codelib.CodeLib: Caller -&gt; com.example.getmac.MainActivity.onCreate(MainActivity.java:31)</span><br></pre></td></tr></table></figure>
+
+<h2 id="开发"><a href="#开发" class="headerlink" title="开发"></a>开发</h2><p>​    这个框架目前用的人很少很少，所以你想要做的功能都得自己开发插件，官方文档中也说明该怎么开发一个Module，这里我再整理一下。</p>
+<p>​    首先要自己开发一个Module是需要安装Artist的SDK的，这个SDK在github的release里能下载到。Ubuntu用户可以直接下载deb的包安装，Mac用户不太清楚，没有环境测试，不过官方是提供了一个zip的，目录结构跟我安装deb包之后<code>opt/artist-sdk</code>下的目录一样。</p>
+<p>​    插件开发分为两部分，一个目录是codelib，一个目录是module。codelib简单点说就是你要实现的自己的方法，就是普通app的写法，比较简单。module这里就是主角了，是针对dex2oat阶段的插桩逻辑的开发。这部分用的是C++，而且都是比较底层的写法，比较头痛。最后实现的效果就是能让你的app在dex翻译阶段在指定的指令周围插入你codelib中的方法，我们参考一个例子来理解一下。</p>
+<h3 id="Codelib开发"><a href="#Codelib开发" class="headerlink" title="Codelib开发"></a>Codelib开发</h3><p>​    codelib目录就是一个标准的安卓工程，使用gradle构建。这里gradle可能存在下载不动的情况，推荐使用阿里云的镜像访问，或者自己改成本地已经有的gradle版本。我们要修改的就只有Codelib.java文件了。比如说，等会我准备在目标APP的合适位置插入一句打印log的方法，那我就要先实现这个方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SuppressWarnings</span>(<span class="string">"unused"</span>)</span><br><span class="line">    <span class="meta">@Inject</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">myLOG</span><span class="params">(<span class="keyword">int</span> leet)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (leet != <span class="number">2333</span>) &#123;</span><br><span class="line">            Log.e(TAG, <span class="string">"Error! Our artist pass provided "</span> + leet + <span class="string">" instead of 2333"</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            Log.v(<span class="string">"ARTIST_TAG"</span>, <span class="string">"blackmax -&gt; 2333"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    @Inject就表示这个是要被注入到APP里的方法，用这个注解标记。这里我传入了一个参数，这个参数是在Module里我传进来的，可以结合后面的代码看一下是怎么传进来的。</p>
+<p>​    修改完java文件之后我们要做两件是，第一个是build这个app，并且把生成的.apk文件改名成codelib.apk放到下面module文件目录中。第二个是要使用<a href="https://github.com/Project-ARTist/codelib-gen" target="_blank" rel="noopener">codelib-gen</a>来生成两个文件codelib.cc和codelib.h，具体用法是</p>
+<p><code>./codelib-gen.py your/path/to/CodeLib.java yourModuleName</code></p>
+<p>​    之后在目录下就有这两个文件，然后放到module的目录中就行了。</p>
+<h3 id="Module开发"><a href="#Module开发" class="headerlink" title="Module开发"></a>Module开发</h3><p>​    我们先看一下一个module的目录结构</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">├── CMakeLists.txt</span><br><span class="line">├── codelib.apk</span><br><span class="line">├── LICENSE</span><br><span class="line">├── Makefile</span><br><span class="line">├── Manifest.json</span><br><span class="line">└── src</span><br><span class="line">    ├── codelib.cc	//上一步生成的</span><br><span class="line">    ├── codelib.h	//上一步生成的</span><br><span class="line">    ├── module.cc	//可以在这里实现方法的过滤，要注入到那些方法中，白名单黑名单都可以</span><br><span class="line">    ├── module.h	//基本固定不用修改</span><br><span class="line">    ├── pass.cc		//我们要自己实现的逻辑，重要</span><br><span class="line">    └── pass.h		//定义自己Module的类，主要就修改个模块名字</span><br></pre></td></tr></table></figure>
+
+<p>​    这里讲一下名单过滤功能，比如我只想要注入到com.example.下的所有的method中，那就使用白名单</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">unique_ptr</span>&lt;Filter&gt; TainttrackModule::getMethodFilter() <span class="keyword">const</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> <span class="built_in">vector</span>&lt;<span class="keyword">const</span> <span class="built_in">string</span>&gt; whiteListDefinition = &#123;</span><br><span class="line">    <span class="string">"com.example."</span>,</span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">unique_ptr</span>&lt;Filter&gt;(<span class="keyword">new</span> MethodNameWhitelist(whiteListDefinition, <span class="literal">false</span>, <span class="literal">true</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    最重要的功能就是实现在pass.cc里的了，我这里用个简单的遍历instruction，然后在符合要求的地方插入一句调用来说明。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> HTainttrackArtist::RunPass() &#123;</span><br><span class="line">    <span class="comment">// Initializing some variables</span></span><br><span class="line">    <span class="keyword">auto</span> allocator = graph_-&gt;GetArena();</span><br><span class="line">    <span class="keyword">auto</span> env = getCodeLibEnvironment();</span><br><span class="line">    <span class="keyword">const</span> art::DexFile&amp; current = graph_-&gt;GetDexFile();</span><br><span class="line">    <span class="keyword">auto</span> symbols = env-&gt;getCodelibSymbols(&amp;current);</span><br><span class="line">    art::ArtistLog::ForceVerboseLogging();</span><br><span class="line">    VLOG(artist) &lt;&lt; <span class="string">"===== method info begin ====="</span>;</span><br><span class="line">    art::ArtistLog::LogMethod(_method_info);</span><br><span class="line">    VLOG(artist) &lt;&lt; <span class="string">"===== method info end ====="</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> block: graph_-&gt;GetBlocks())&#123;</span><br><span class="line">        <span class="keyword">if</span> (block != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">          <span class="comment">//开始遍历每个block中的每条指令</span></span><br><span class="line">            <span class="keyword">auto</span> instr = block-&gt;GetFirstInstruction();</span><br><span class="line">            <span class="keyword">while</span> (instr != <span class="literal">nullptr</span>)&#123;</span><br><span class="line">              <span class="comment">// 如果这条指令是个调用函数的指令，</span></span><br><span class="line">              <span class="keyword">if</span> (instr -&gt; IsInvoke()) &#123;</span><br><span class="line">                <span class="keyword">auto</span> ins = instr-&gt;AsInvoke();<span class="comment">// **ins** contains the current instruction cursor,大概是这样能拿到cursor</span></span><br><span class="line">                <span class="keyword">if</span> (ArtUtils::GetMethodName(ins, <span class="literal">true</span>).<span class="built_in">find</span>(<span class="string">"getBluetoothMacAddress"</span>) != <span class="built_in">string</span>::npos) &#123;</span><br><span class="line">                  VLOG(artist) &lt;&lt; <span class="string">"inject first instruction"</span>;</span><br><span class="line">                  <span class="keyword">auto</span> codelib_instruction = GetCodeLibInstruction();</span><br><span class="line">                  <span class="built_in">vector</span>&lt;art::HInstruction *&gt; params = &#123;codelib_instruction,ins&#125;;</span><br><span class="line">                  <span class="built_in">string</span> invoked_signature = TainttrackCodeLib::_M_SAARLAND_CISPA_ARTIST_CODELIB_CODELIB__MYLOG__L__V;</span><br><span class="line">                  <span class="comment">//创建一个调用codelib的调用</span></span><br><span class="line">                  <span class="keyword">auto</span> invoke_codelib_method = <span class="keyword">new</span> (allocator) art::HInvokeVirtual(allocator,</span><br><span class="line">                  <span class="keyword">static_cast</span>&lt;<span class="keyword">uint32_t</span>&gt;(params.<span class="built_in">size</span>()), art::Primitive::kPrimVoid, <span class="number">0</span>,</span><br><span class="line">                  symbols-&gt;getMethodIdx(</span><br><span class="line">                    invoked_signature),</span><br><span class="line">                    (<span class="keyword">uint32_t</span>) env-&gt;getMethodVtableIdx(invoked_signature)</span><br><span class="line">                  );</span><br><span class="line">                  <span class="comment">//设置这个调用的参数</span></span><br><span class="line">                  ArtUtils::SetupInstructionArguments(invoke_codelib_method, params);</span><br><span class="line">                  <span class="comment">// 插入调用</span></span><br><span class="line">                  block-&gt;InsertInstructionAfter(invoke_codelib_method, ins);</span><br><span class="line">                &#125;</span><br><span class="line">              &#125;</span><br><span class="line">              <span class="comment">// 如果是最后一条指令，就跳出本个block</span></span><br><span class="line">                <span class="keyword">if</span> (instr == block-&gt;GetLastInstruction())&#123;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                instr = instr-&gt;GetNext();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    这里还是推荐多看看官方的template和其他插件的实现自己尝试一些api，我这也是试试写的，并不是官方的写法。不过官方demo的API也比较少，具体只能去翻artist/api中的列表看源码，另外安卓art项目中的接口也是能用的，就是这些C++写的也太难读了，只能慢慢看了。</p>
+<p>​    之后就得具体开始开发taint的逻辑了，有点难顶啊铁汁。后面有时间会更新模块的写法的。</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/5146554.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/qq/001faIUs4M2zna.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>

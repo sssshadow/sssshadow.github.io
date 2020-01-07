@@ -1,0 +1,201 @@
+
+<!DOCTYPE html>
+<html lang="" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>安卓应用测试工具 - BlackMax&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="​    最近跑了几个工具，都是一些自动化测试的框架，目的是可以在fuzz的时候扩大code coverage。记录一下，也对比一下。
+Stoat​    StoatStoat并不依赖安卓源码，不过,"> 
+    <meta name="author" content="BlackMax"> 
+    <link rel="alternative" href="atom.xml" title="BlackMax&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">BlackMax&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;" data-url="blackmax1s.me"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">安卓应用测试工具</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">安卓应用测试工具</h1>
+        <div class="stuff">
+            <span>五月 12, 2019</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E5%AE%89%E5%8D%93-fuzz/" rel="tag">安卓 fuzz</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <p>​    最近跑了几个工具，都是一些自动化测试的框架，目的是可以在fuzz的时候扩大code coverage。记录一下，也对比一下。</p>
+<h2 id="Stoat"><a href="#Stoat" class="headerlink" title="Stoat"></a>Stoat</h2><p>​    StoatStoat并不依赖安卓源码，不过也需要配置好sdk等环境。需要ruby2.3以上，以及<a href="https://nokogiri.org/tutorials/installing_nokogiri.html" target="_blank" rel="noopener">Nokogiri</a>python2.7并安装<a href="https://github.com/xiaocong/uiautomator" target="_blank" rel="noopener">uiautomator</a></p>
+<p>​    git clone下<a href="https://github.com/tingsu/Stoat" target="_blank" rel="noopener">Stoat</a>和uiautomator的代码添加以下环境变量</p>
+<p>​    修改Stoat/CONF.txt，主要还是前面3个路径，下面几个是配置运行的参数，具体还没搞明白，但是默认的能run起来</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> Android SDK Configurations </span></span><br><span class="line">ANDROID_SDK_DIR = /home/blackmax/Android/Sdk ANDROID_LIB_DIR = /home/blackmax/Android/Sdk/platforms/android-18/android.jar </span><br><span class="line"><span class="meta">#</span><span class="bash"> Stoat Tool Dir  </span></span><br><span class="line">STOAT_TOOL_DIR = /media/blackmax/store/WorkSpace/TestEnv/Stoat/Stoat</span><br></pre></td></tr></table></figure>
+<p>​    运行命令，记得替换掉设备编号，用adb devices的编号替换</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby run_stoat_testing.rb --app_dir <span class="string">'/path/to/target.apk'</span>  --real_device_serial f59bff09 --stoat_port 2000 --project_type apk --max_event number 100（可以修改）</span><br></pre></td></tr></table></figure>
+<p>​    具体能指定的参数如下，更多参考源码中run_stoat_testing.rb</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">opts.on(<span class="string">"--model_time time"</span>, <span class="string">"the time allocated for construct model (in hours), default: 1.2h"</span>)  </span><br><span class="line">opts.on(<span class="string">"--mcmc_time time"</span>, <span class="string">"the time allocated for mcmc sampling (in hours), default: 2h"</span>)  </span><br><span class="line">opts.on(<span class="string">"--max_event number"</span>, <span class="string">"the max number of events for model construction, default: 3000"</span>)  </span><br><span class="line">opts.on(<span class="string">"--event_delay time"</span>, <span class="string">"the delay time between the events in milliseconds, e.g., 1000, wait util the event takes effect, especially useful for long-running tasks (e.g., network accessing, processing bar, data processing) or slow-reacting emulators."</span>)</span><br></pre></td></tr></table></figure>
+<p>​    如果遇到端口占用的情况，可以修改–stoat_port 2000为其他端口，如2002等</p>
+<p>​    在启动TaintDroid的时候，碰到一个问题，不能识别adb install -g参数，我把-g参数去掉了，不清楚会带来什么影响，目前从表现上没看出来</p>
+<p>​    其实我还是配了很久环境才起起来，现在看看好像也没有什么很麻烦的操作，但是不知道当时为啥绕了很久，这个工具run起来的时候，会自动探索app能操作的界面，然后去操作，有时候会重启app，具体的时间，事件上限都能用上面的参数设置。</p>
+<p>​    哦对了，说说coverage的事，这个app支持那些开源的app源码，然后应该是会插入一些计算coverage的代码，安装运行之后，会在结束的时候生成报告，这样就能计算coverage了。但是那些现成的.apk文件似乎只能fuzz不能生成coverage的信息。如果自己使用Ella插桩，那就自己起个ella的服务，然后自己计算coverage吧。</p>
+<h2 id="A3E"><a href="#A3E" class="headerlink" title="A3E"></a><a href="https://github.com/tanzirul/a3e" target="_blank" rel="noopener">A3E</a></h2><p>​    a3e应该是比较老的一个工具，我看Stoat里也有a3e的部分。这个工具我用起来感觉很多不兼容的现象，稍微看了看源码，感觉是会把apk重新签名，然后再安装运行，中间用apktools进行了一些操作。我试了几个很老的app能通过，一些很新的app都会报错，应该是没能成功生成重签名的app，导致后面没有办法继续run了。</p>
+<p>​    如果只是为了测试工具能不能用，推荐使用官方github中的 VirtulBox镜像直接run，虽然会很卡，但是能快速验证不用搭环境，我之前试过。</p>
+<p>​    不过自己搭环境问题也不大，按照官方说的配一下就OK。不过还要注意，这个工具是需要用apktools的，所以java的环境也得正常，不然可能会出一些奇奇怪怪的问题。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ANDROID_HOME=<span class="variable">$HOME</span>/sdk <span class="comment"># your own path here!</span></span><br><span class="line"><span class="built_in">export</span> ANDROID_HOME</span><br><span class="line"></span><br><span class="line">PATH=<span class="variable">$ANDROID_HOME</span>/tools:<span class="variable">$PATH</span></span><br><span class="line">PATH=<span class="variable">$ANDROID_HOME</span>/platform-tools:<span class="variable">$PATH</span></span><br><span class="line"><span class="built_in">export</span> PATH</span><br></pre></td></tr></table></figure>
+
+<p>​    我一开始配完环境开始run也并不顺利，照官方的命令测试几个app都有问题，以为配置哪里有问题，最后从虚拟机的a3e/aut目录下考了他的测试case，Amazon的一个很老的版本，然后就run起来了。。。有点坑</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby bin/rec.rb target.apk --no-rec -loop</span><br></pre></td></tr></table></figure>
+
+<p>​    如果自己配的环境跑不起来case，不妨多找点老的case，或者直接从模拟器中把他的a3e目录拿出来，用里面的代码和样例apk做测试。</p>
+<h2 id="对比"><a href="#对比" class="headerlink" title="对比"></a>对比</h2><p>​    这两个工具其实我只是用了Stoat做了测试，A3E对于APP的支持太不好了，我想测的app都报错，不知道是版本原因还是什么问题，自带的case又已经很老了，连操作都无法操作，只能验证一下环境正常。哦对了，我试了一下9.0的手机,8.0的手机和6.0的手机，6.0的最好，其他的都有些奇奇怪怪的问题。估计是版本太老，或者代码的鲁棒性不强，我也没时间去调整了。就先这样吧。</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/5146554.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/qq/001faIUs4M2zna.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>

