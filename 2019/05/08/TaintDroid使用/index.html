@@ -88,9 +88,9 @@
 <p>​    第二个是注意到官方文档中有说道，需要使用一个特定的内核以支持他的文件系统，就是<strong>Step 7: Obtain a kernel with YAFFS2 XATTR support (emulator only)</strong>中说道的。虽然我一开始没有指定，也能正常的运行了，但是为了功能完整性起见，还是把这个加上，按照链接下载，在运行的时候指定一个kernel参数</p>
 <p><code>emulator -kernel &#39;/home/blackmax/back_disk/WorkSpace/Taint_workspace/kernel-goldfish-xattr-2.6.29&#39; -dns-server 8.8.8.8,114.114.114.114</code></p>
 <p>​    之后就没什么坑了，在列表中找到TaintdroidNotify这个APP，开启通知。</p>
-<p><img src="./TaintDroid%E4%BD%BF%E7%94%A8/notify.png" alt="notify"></p>
+<p><img src="notify.png" alt="notify"></p>
 <p>​    接着安装一个会泄露IMEI之类的软件，这里随便安装了一个百度的宝宝知道，启动之后（有点卡，要等很久）就可以看到通知栏有检测到IMEI的泄露</p>
-<p><img src="./TaintDroid%E4%BD%BF%E7%94%A8/alert.png" alt="alert"></p>
+<p><img src="alert.png" alt="alert"></p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>​    其实这个安装算是简单的，但是还是花了很久的时间去踩坑，好在最后能用，总的来说就是注意虚拟机运行的方式，其他就没什么坑的地方了</p>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->

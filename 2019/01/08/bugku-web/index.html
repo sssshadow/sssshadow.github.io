@@ -73,7 +73,7 @@
 <p>​    先看看源码</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">    &lt;title&gt;Bugku-ctf&lt;&#x2F;title&gt;</span><br><span class="line">&lt;a href&#x3D;&quot;.&#x2F;index.php?file&#x3D;show.php&quot;&gt;click me? no&lt;&#x2F;a&gt;&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
 
-<p>​    据说这个?file=show.php一看就是种典型的文件包含，想着换个文件名看看能得到个啥，结果只有一堆这样的标签<img src="bugku_web/flag_index_php.png" alt="index.php"></p>
+<p>​    据说这个?file=show.php一看就是种典型的文件包含，想着换个文件名看看能得到个啥，结果只有一堆这样的标签<img src="flag_index_php.png" alt="index.php"></p>
 <p>​    然后就不知道干啥了，看了看大佬们的wp，要用到一种php里的协议php://filter，这里就学习一下这个协议</p>
 <h2 id="php-filter"><a href="#php-filter" class="headerlink" title="php://filter"></a>php://filter</h2><p>​    这是一种元封装器(虽然现在还不理解什么叫元封装器)，用于筛选(好像还能改变)打开读入的数据流，这里摘一个表格，虽然第四个我也还不懂。</p>
 <table>
@@ -111,7 +111,7 @@
 <p>​    发一下看看发生了什么，e….和上面情况一样，用上read参数</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php:<span class="comment">//filter/read/convert.base64-encode/resource=index.php</span></span><br></pre></td></tr></table></figure>
 
-<p><img src="bugku_web/flag_index_base64.png" alt="base64"></p>
+<p><img src="flag_index_base64.png" alt="base64"></p>
 <p>​    把得到的base64解码一下就能得到index.php正常的代码了</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">    &lt;title&gt;Bugku-ctf&lt;&#x2F;title&gt;</span><br><span class="line">    </span><br><span class="line">&lt;?php</span><br><span class="line">	error_reporting(0);</span><br><span class="line">	if(!$_GET[file])&#123;echo &#39;&lt;a href&#x3D;&quot;.&#x2F;index.php?file&#x3D;show.php&quot;&gt;click me? no&lt;&#x2F;a&gt;&#39;;&#125;</span><br><span class="line">	$file&#x3D;$_GET[&#39;file&#39;];</span><br><span class="line">	if(strstr($file,&quot;..&#x2F;&quot;)||stristr($file, &quot;tp&quot;)||stristr($file,&quot;input&quot;)||stristr($file,&quot;data&quot;))&#123;</span><br><span class="line">		echo &quot;Oh no!&quot;;</span><br><span class="line">		exit();</span><br><span class="line">	&#125;</span><br><span class="line">	include($file); </span><br><span class="line">&#x2F;&#x2F;flag:flag&#123;edulcni_elif_lacol_si_siht&#125;</span><br><span class="line">?&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
 

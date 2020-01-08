@@ -73,7 +73,7 @@
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"> ~/CTF/armpwn  apt-cache search <span class="string">"libc6"</span> | grep <span class="string">"arm"</span>                                   </span><br><span class="line">libc6-arm64-cross - GNU C Library: Shared libraries (<span class="keyword">for</span> cross-compiling)</span><br><span class="line">libc6-armhf-cross - GNU C Library: Shared libraries (<span class="keyword">for</span> cross-compiling)</span><br><span class="line">libc6-dev-arm64-cross - GNU C Library: Development Libraries and Header Files (<span class="keyword">for</span> cross-compiling)</span><br><span class="line">libc6-dev-armhf-cross - GNU C Library: Development Libraries and Header Files (<span class="keyword">for</span> cross-compiling)</span><br><span class="line">libc6-armel-armhf-cross - Dummy package to get libc6:armel installed</span><br><span class="line">libc6-armel-cross - GNU C Library: Shared libraries (<span class="keyword">for</span> cross-compiling)</span><br><span class="line">libc6-armhf-armel-cross - Dummy package to get libc6:armhf installed</span><br><span class="line">libc6-dbg-arm64-cross - GNU C Library: detached debugging symbols (<span class="keyword">for</span> cross-compiling)</span><br><span class="line">libc6-dbg-armel-cross - GNU C Library: detached debugging symbols (<span class="keyword">for</span> cross-compiling)</span><br><span class="line">libc6-dbg-armhf-cross - GNU C Library: detached debugging symbols (<span class="keyword">for</span> cross-compiling)</span><br><span class="line">libc6-dev-armel-armhf-cross - Dummy package to get libc6-dev:armel installed</span><br><span class="line">libc6-dev-armel-cross - GNU C Library: Development Libraries and Header Files (<span class="keyword">for</span> cross-compiling)</span><br><span class="line">libc6-dev-armhf-armel-cross - Dummy package to get libc6-dev:armhf installed</span><br></pre></td></tr></table></figure>
 
 <p>​    我装了好几个，虽然不清楚其中的区别有哪些，不过安装完后在/usr/目录下能看到类似的一般就没问题了</p>
-<p><img src="armpwn/arm.png" alt="armtools"></p>
+<p><img src="arm.png" alt="armtools"></p>
 <p>​    调试arm程序的命令和x86的也有所区别，首先我们需要用QEMU启动，指定共享库，并开启一个端口，我在本地开了1234这个端口运行程序，用的是arm-linux-gnueabi这个共享库</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-arm -g 1234 -L /usr/arm-linux-gnueabi ./armpwn</span><br></pre></td></tr></table></figure>
 
@@ -81,7 +81,7 @@
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; <span class="built_in">set</span> architecture arm</span><br><span class="line">The target architecture is assumed to be arm</span><br><span class="line">pwndbg&gt; target remote localhost:1234</span><br></pre></td></tr></table></figure>
 
 <p>​    然后就能看到熟悉的界面了，剩下的跟平时的gdb操作一样了。</p>
-<p><img src="armpwn/gdb.png" alt="gdb"></p>
+<p><img src="gdb.png" alt="gdb"></p>
 <p>​    用脚本运行程序的时候需要注意，这里process吃的参数是一个<strong>list</strong>！！不再是一个字符串了，可以用split(‘ ‘)快速分割。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh = process(<span class="string">'qemu-arm -g 1234 -L /usr/arm-linux-gnueabi ./armpwn.bak'</span>.split(<span class="string">' '</span>))</span><br></pre></td></tr></table></figure>
 
@@ -89,8 +89,8 @@
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Arch:     arm-32-little</span><br><span class="line">  RELRO:    Partial RELRO</span><br><span class="line">  Stack:    Canary found</span><br><span class="line">  NX:       NX enabled</span><br><span class="line">  PIE:      No PIE (0x10000)</span><br></pre></td></tr></table></figure>
 
 <p>​    丢到ida里看一下，程序逻辑很简单，先输入一个name，然后程序会把整个字符串的长度保存在s的第一个byte，然后就可以输入溢出的payload了。程序还提供了system函数，和/bin/sh字符串，明摆着让我们用。</p>
-<p><img src="armpwn/system.png" alt="system"></p>
-<p><img src="armpwn/ida.png" alt="ida"></p>
+<p><img src="system.png" alt="system"></p>
+<p><img src="ida.png" alt="ida"></p>
 <p>​    知道逻辑之后就开始调试吧，因为开了canary，所以要先想办法泄露canary，这里的snprintf()就可以拿来泄露整个buf。然后从中截取出canary。</p>
 <p>​    根据调试，我们可以得到在输入第一次内容之后，再输入0x18个bytes就会到canary的位置，后面就可以构造ROP chain，于是第二次的payload可以构造成</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flat(<span class="string">'a'</span> * <span class="number">0x18</span>, canary, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>)</span><br></pre></td></tr></table></figure>
